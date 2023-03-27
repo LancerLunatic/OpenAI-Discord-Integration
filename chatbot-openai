@@ -1,0 +1,73 @@
+import openai
+import re
+import random
+import discord
+from discord.ext import commands
+
+# Set up OpenAI API credentials
+openai.api_key = "YOUR_API_KEY"
+
+# Define a list of frequently asked questions and their corresponding prompts
+faq = [
+    {
+        "question": "How do I reset my password?",
+        "prompt": "Reset my password."
+    },
+    {
+        "question": "What payment methods do you accept?",
+        "prompt": "Accepted payment methods."
+    },
+    {
+        "question": "How can I cancel my subscription?",
+        "prompt": "Cancel my subscription."
+    }
+]
+
+# Define a function to match a user message to a frequently asked question
+def match_faq(message):
+    for item in faq:
+        if re.search(item["question"], message, re.IGNORECASE):
+            return item["prompt"]
+    return None
+
+# Define a function to generate a response using the ChatGPT API
+def generate_response(prompt):
+    response = openai.Completion.create(
+        engine="davinci",
+        prompt=prompt,
+        temperature=0.5,
+        max_tokens=1024,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    return response.choices[0].text.strip()
+
+# Define a function to process a user message and generate a response
+def process_message(message):
+    # Check if the message matches a frequently asked question
+    prompt = match_faq(message)
+    if prompt:
+        response = generate_response(prompt)
+    else:
+        # Generate a response using the ChatGPT API
+        response = generate_response(message)
+    return response
+
+# Set up the Discord bot
+bot = commands.Bot(command_prefix='!')
+
+# Define a function to handle user messages
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+
+    # Process the user message and generate a response
+    response = process_message(message.content)
+
+    # Send the response back to the user
+    await message.channel.send(response)
+
+# Run the Discord bot
+bot.run("YOUR_DISCORD_BOT_TOKEN")
