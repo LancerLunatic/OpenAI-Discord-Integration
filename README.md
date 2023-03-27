@@ -1,0 +1,4 @@
+# OpenAI-Discord-Integration
+
+This chat bot uses the OpenAI API to generate responses to user messages, and it integrates with the Discord SaaS using the discord and discord.ext modules. The bot is set up using the commands.Bot class, and the on_message function is defined to handle user messages. The process_message function is used to process the user message and generate a response, and the response is sent back to the user using the message.channel.send method.
+The match_faq function and the list of frequently asked questions are used to provide quick answers to common user inquiries. If a user message matches a frequently asked question, the corresponding prompt is used to generate the response using the ChatGPT API. If no match is found, the user message is passed directly to the ChatGPT API to generate the response.
